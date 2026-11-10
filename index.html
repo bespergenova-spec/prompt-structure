@@ -6,8 +6,8 @@
 <title>Планер задач</title>
 <style>
 :root{
-  --bg:#f6f7f9; --panel:#ffffff; --text:#1c2230; --muted:#6b7385; --line:#e4e7ee;
-  --accent:#3b6ef6; --accent-ink:#ffffff; --danger:#d93f3f; --warn:#c77a0a; --hover:#f0f3fa;
+  --bg:#f3f5f9; --panel:#ffffff; --text:#1c2230; --muted:#6b7385; --line:#e2e6ee;
+  --accent:#3b6ef6; --accent-ink:#ffffff; --danger:#d93f3f; --warn:#c77a0a; --hover:#eef2fb;
 }
 @media (prefers-color-scheme: dark){
   :root{ --bg:#14171d; --panel:#1c2029; --text:#e6e9f0; --muted:#8f98ab; --line:#2b3140;
@@ -15,137 +15,139 @@
 }
 *{box-sizing:border-box}
 html,body{height:100%}
-body{margin:0;background:var(--bg);color:var(--text);font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+body{margin:0;background:var(--bg);color:var(--text);font:14px/1.35 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 button,input,select,textarea{font:inherit;color:inherit}
-.app{display:grid;grid-template-columns:230px 1fr;min-height:100%}
-aside{background:var(--panel);border-right:1px solid var(--line);padding:20px 12px;display:flex;flex-direction:column;gap:6px;position:sticky;top:0;height:100vh}
-aside h1{font-size:18px;margin:0 8px 14px}
-.nav{display:flex;align-items:center;gap:10px;width:100%;padding:8px 10px;border:0;background:none;border-radius:8px;cursor:pointer;text-align:left}
-.nav:hover{background:var(--hover)}
-.nav.on{background:var(--hover);font-weight:600}
-.dot{width:10px;height:10px;border-radius:50%;flex:none;background:var(--muted)}
-.nav .n{margin-left:auto;color:var(--muted);font-size:13px}
-.spacer{flex:1}
-.side-btn{width:100%;padding:9px 10px;border-radius:8px;border:1px solid var(--line);background:none;cursor:pointer;text-align:left}
-.side-btn:hover{background:var(--hover)}
-.side-btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600;text-align:center}
-.side-btn.primary:hover{filter:brightness(1.08)}
-.small{font-size:12px;color:var(--muted);margin:6px 8px 0}
-main{padding:24px clamp(16px,4vw,48px);max-width:960px;width:100%}
-#qa{display:flex;gap:8px;flex-wrap:wrap;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px}
-#qa input[type=text]{flex:1 1 260px;border:0;outline:0;background:none;padding:6px 8px;font-size:16px}
-.ctl{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:6px 8px}
-#qa button{background:var(--accent);color:var(--accent-ink);border:0;border-radius:8px;padding:6px 16px;font-weight:600;cursor:pointer}
-.tools{display:flex;align-items:center;gap:12px;margin:18px 2px 6px;flex-wrap:wrap}
-.tabs{display:flex;background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:hidden}
-.tabs button{border:0;background:none;padding:6px 14px;cursor:pointer}
-.tabs button.on{background:var(--accent);color:var(--accent-ink);font-weight:600}
-#search{margin-left:auto;width:200px}
-.overdue-chip{color:var(--danger);font-size:13px;cursor:pointer;background:none;border:0}
-.group h3{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:22px 4px 6px;font-weight:600}
+.wrap{max-width:560px;margin:0 auto;padding:10px 12px 24px}
+header{display:flex;align-items:center;gap:8px;margin:2px 0 8px;position:relative}
+header h1{font-size:16px;margin:0;flex:1}
+header h1 small{font-weight:400;color:var(--muted);margin-left:6px}
+.hbtn{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:4px 10px;cursor:pointer;font-size:13px}
+.hbtn:hover{background:var(--hover)}
+.hbtn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
+.menu{position:absolute;right:0;top:34px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,.18);z-index:20;min-width:180px}
+.menu button{display:block;width:100%;text-align:left;border:0;background:none;padding:7px 10px;border-radius:6px;cursor:pointer}
+.menu button:hover{background:var(--hover)}
+.chips{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
+.chip{border:1px solid var(--line);background:var(--panel);border-radius:14px;padding:2px 10px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:5px}
+.chip:hover{background:var(--hover)}
+.chip.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.chip i{width:8px;height:8px;border-radius:50%;display:inline-block}
+.chip b{font-weight:400;opacity:.7;font-size:12px}
+#qa{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:6px}
+.qtop{display:flex;gap:6px;align-items:center}
+#qText{border:0;outline:0;background:none;padding:4px 2px;font-size:15px;flex:1;min-width:0}
+.qrow{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.qrow .grow{flex:1}
+.ctl,.dt input[type=text],.t{border:1px solid var(--line);background:var(--bg);border-radius:6px;padding:3px 6px}
+.add{background:var(--accent);color:var(--accent-ink);border:0;border-radius:6px;padding:4px 14px;font-weight:600;cursor:pointer}
+.dt{position:relative;display:inline-flex;align-items:center;gap:2px}
+.dt input[type=text]{width:92px}
+.dt .pk{position:absolute;left:0;bottom:0;width:0;height:0;opacity:0;pointer-events:none;border:0;padding:0}
+.cal{border:0;background:none;cursor:pointer;padding:0 2px;font-size:14px}
+.t{width:56px;text-align:center}
+.bad{border-color:var(--danger)!important}
+.late{color:var(--danger);font-weight:600}
+.soon{color:var(--warn);font-weight:600}
+.group h3{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:14px 4px 5px;font-weight:600}
 .group h3.bad{color:var(--danger)}
-.row{display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:6px 10px;margin-bottom:6px}
+.row{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--muted);border-radius:8px;padding:5px 8px;margin-bottom:5px}
 .row:hover{border-color:var(--accent)}
-.row input[type=checkbox]{width:18px;height:18px;accent-color:var(--accent);flex:none;cursor:pointer}
-.row .title{flex:1;min-width:0;border:0;background:none;outline:0;padding:4px 2px;border-radius:4px}
+.row .top{display:flex;align-items:center;gap:8px}
+.row input[type=checkbox]{width:17px;height:17px;accent-color:var(--accent);flex:none;cursor:pointer}
+.row .title{flex:1;min-width:0;border:0;background:none;outline:0;padding:3px 2px;border-radius:4px;font-size:14px}
 .row .title:focus{background:var(--hover)}
 .row.done .title{text-decoration:line-through;color:var(--muted)}
-.row select.cat{border:0;border-radius:12px;padding:3px 6px;font-size:13px;cursor:pointer;color:var(--text)}
-.row input[type=date]{border:1px solid transparent;background:none;border-radius:6px;padding:3px 4px;font-size:13px;color:var(--muted);width:128px}
-.row input[type=date]:hover,.row input[type=date]:focus{border-color:var(--line)}
-.row input[type=date].late{color:var(--danger);font-weight:600}
-.row input[type=date].today{color:var(--warn);font-weight:600}
-.badge{font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:10px;padding:1px 7px;white-space:nowrap}
-.del{border:0;background:none;color:var(--muted);cursor:pointer;font-size:18px;line-height:1;opacity:0;padding:2px 6px;border-radius:6px}
+.row .meta{display:flex;gap:5px;align-items:center;flex-wrap:wrap;margin:2px 0 1px 25px}
+.row .meta .dt input[type=text],.row .meta .t{background:none;border-color:transparent;font-size:12px;padding:1px 4px;color:var(--muted)}
+.row .meta .dt input[type=text]:hover,.row .meta .t:hover,.row .meta .dt input[type=text]:focus,.row .meta .t:focus{border-color:var(--line)}
+.row .meta .dt input[type=text].late,.row .meta .t.late{color:var(--danger);font-weight:600}
+.row .meta .dt input[type=text].soon,.row .meta .t.soon{color:var(--warn);font-weight:600}
+.row .meta .dt input[type=text]{width:84px}
+.row .meta .t{width:46px}
+.row select.cat{border:0;border-radius:10px;padding:1px 4px;font-size:12px;cursor:pointer}
+.badge{font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:9px;padding:0 6px}
+.del{border:0;background:none;color:var(--muted);cursor:pointer;font-size:17px;line-height:1;opacity:0;padding:0 5px;border-radius:5px}
 .row:hover .del{opacity:1}
 .del:hover{color:var(--danger);background:var(--hover)}
-.empty{text-align:center;color:var(--muted);padding:48px 0}
-.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:10px 16px;border-radius:10px;display:flex;gap:14px;align-items:center;box-shadow:0 6px 24px rgba(0,0,0,.25);z-index:50}
+.empty{text-align:center;color:var(--muted);padding:30px 0}
+.donebar{display:flex;align-items:center;margin:16px 2px 6px}
+.donebar button.tg{border:0;background:none;color:var(--muted);cursor:pointer;padding:2px 4px;font-size:13px}
+.donebar button.tg:hover{color:var(--text)}
+.donebar .clr{margin-left:auto;border:0;background:none;color:var(--muted);cursor:pointer;font-size:12px;text-decoration:underline}
+.toast{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:8px 14px;border-radius:10px;display:flex;gap:12px;align-items:center;box-shadow:0 6px 24px rgba(0,0,0,.25);z-index:50;max-width:92vw}
 .toast button{background:none;border:0;color:inherit;text-decoration:underline;cursor:pointer;padding:0}
-dialog{border:1px solid var(--line);border-radius:14px;padding:0;background:var(--panel);color:var(--text);width:min(720px,94vw);max-height:90vh}
+dialog{border:1px solid var(--line);border-radius:14px;padding:0;background:var(--panel);color:var(--text);width:min(600px,96vw);max-height:94vh}
 dialog::backdrop{background:rgba(10,12,18,.5)}
-.dlg{padding:20px 22px;display:flex;flex-direction:column;gap:12px;max-height:88vh}
-.dlg h2{margin:0;font-size:18px}
-.dlg label{font-size:13px;color:var(--muted)}
-.dlg input[type=text],.dlg textarea{width:100%;border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:8px 10px}
-.dlg textarea{min-height:90px;resize:vertical}
-.drop{border:2px dashed var(--line);border-radius:12px;padding:22px;text-align:center;color:var(--muted);cursor:pointer}
+.dlg{padding:16px;display:flex;flex-direction:column;gap:10px;max-height:92vh}
+.dlg h2{margin:0;font-size:16px}
+.dlg label{font-size:12px;color:var(--muted)}
+.dlg input[type=text],.dlg textarea{width:100%;border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:6px 9px}
+.dlg textarea{min-height:70px;resize:vertical}
+.drop{border:2px dashed var(--line);border-radius:12px;padding:16px;text-align:center;color:var(--muted);cursor:pointer}
 .drop.over{border-color:var(--accent);background:var(--hover)}
 .btns{display:flex;gap:8px;justify-content:flex-end}
-.btn{border:1px solid var(--line);background:none;border-radius:8px;padding:8px 16px;cursor:pointer}
+.btn{border:1px solid var(--line);background:none;border-radius:8px;padding:6px 14px;cursor:pointer}
 .btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
 .btn:disabled{opacity:.5;cursor:default}
-.chips{display:flex;gap:6px;flex-wrap:wrap}
-.chip{font-size:12px;background:var(--hover);border-radius:10px;padding:2px 9px}
+.files{display:flex;gap:6px;flex-wrap:wrap}
+.file{font-size:12px;background:var(--hover);border-radius:10px;padding:2px 9px;cursor:pointer}
 .cands{overflow:auto;display:flex;flex-direction:column;gap:6px;min-height:80px}
-.cand{display:grid;grid-template-columns:20px 1fr 138px;gap:4px 10px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+.cand{display:grid;grid-template-columns:20px 1fr;gap:4px 8px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:7px 9px}
 .cand.dup{opacity:.6}
-.cand input[type=checkbox]{width:18px;height:18px;accent-color:var(--accent)}
-.cand input[type=text],.cand input[type=date]{border:1px solid var(--line);background:var(--bg);border-radius:6px;padding:4px 6px;width:100%}
-.cand .src{grid-column:2 / 4;font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-@media (max-width:760px){
-  .app{grid-template-columns:1fr}
-  aside{position:static;height:auto;flex-direction:row;flex-wrap:wrap;border-right:0;border-bottom:1px solid var(--line)}
-  aside{align-items:center;padding:12px}
-  aside h1{width:100%;margin-bottom:4px}
-  #nav{display:flex;flex-wrap:wrap;gap:2px;width:100%}
-  .nav{width:auto}
-  .spacer,.small{display:none}
-  .side-btn{width:auto}
-  .row{flex-wrap:wrap}
-  .row .title{flex-basis:60%}
-  #search{margin-left:0;width:100%}
-}
+.cand input[type=checkbox]{width:17px;height:17px;accent-color:var(--accent)}
+.cand .ttl{border:1px solid var(--line);background:var(--bg);border-radius:6px;padding:3px 6px;width:100%}
+.cand .meta{grid-column:2;display:flex;gap:6px;align-items:center}
+.cand .src{grid-column:2;font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 </style>
 </head>
 <body>
-<div class="app">
-  <aside>
-    <h1>Планер</h1>
-    <div id="nav"></div>
-    <div class="spacer"></div>
-    <button class="side-btn primary" id="btnImport">Задачи из протокола…</button>
-    <button class="side-btn" id="btnExport">Сохранить копию</button>
-    <button class="side-btn" id="btnRestore">Загрузить копию</button>
-    <input type="file" id="restoreFile" accept=".json" hidden>
-    <div class="small">Данные хранятся в этом браузере. Время от времени сохраняйте копию.</div>
-  </aside>
-
-  <main>
-    <form id="qa" autocomplete="off">
-      <input type="text" id="qText" placeholder="Новая задача… например «отчёт до 15.11»" autofocus>
-      <select class="ctl" id="qCat"></select>
-      <input class="ctl" type="date" id="qDate" title="Срок">
-      <button type="submit">Добавить</button>
-    </form>
-
-    <div class="tools">
-      <div class="tabs" id="tabs">
-        <button data-tab="open" class="on">Открытые</button>
-        <button data-tab="done">Закрытые</button>
-        <button data-tab="all">Все</button>
-      </div>
-      <button class="overdue-chip" id="overdueChip" hidden></button>
-      <input class="ctl" type="search" id="search" placeholder="Поиск">
+<div class="wrap">
+  <header>
+    <h1>Мои задачи<small id="count"></small></h1>
+    <button class="hbtn primary" id="btnImport" title="Достать мои задачи из протокола Word">Из протокола</button>
+    <button class="hbtn" id="btnMenu" title="Копия данных">⋯</button>
+    <div class="menu" id="menu" hidden>
+      <button id="btnExport">Сохранить копию</button>
+      <button id="btnRestore">Загрузить копию</button>
     </div>
+    <input type="file" id="restoreFile" accept=".json" hidden>
+  </header>
 
-    <div id="list"></div>
-  </main>
+  <div class="chips" id="chips"></div>
+
+  <form id="qa" autocomplete="off">
+    <div class="qtop">
+      <input type="text" id="qText" placeholder="Новая задача… например «отчёт до 15.11 в 14:00»" autofocus>
+      <button type="submit" class="add">Добавить</button>
+    </div>
+    <div class="qrow" id="qrow">
+      <select class="ctl" id="qCat"></select>
+      <span class="grow"></span>
+    </div>
+  </form>
+
+  <div id="list"></div>
+
+  <div class="donebar">
+    <button class="tg" id="toggleDone"></button>
+    <button class="clr" id="clearDone" hidden>очистить закрытые</button>
+  </div>
+  <div id="doneList" hidden></div>
 </div>
 
 <dialog id="imp">
   <div class="dlg" id="impA">
     <h2>Задачи из протокола</h2>
     <div>
-      <label for="myNames">Как вас называют в протоколах (фамилия; можно несколько через запятую)</label>
-      <input type="text" id="myNames" placeholder="Например: Иванов, Иванова И.И.">
+      <label for="myNames">Как вас называют в протоколах (имя и фамилия; подойдёт любое сочетание, инициалы, склонения)</label>
+      <input type="text" id="myNames">
     </div>
-    <div class="drop" id="drop">Перетащите сюда протокол (.docx, .txt, .md) или нажмите, чтобы выбрать<br><small>Можно сразу несколько файлов</small></div>
+    <div class="drop" id="drop">Перетащите сюда протокол Word (.docx) или нажмите, чтобы выбрать<br><small>Подойдут также .txt и .md; можно несколько файлов</small></div>
     <input type="file" id="impFile" accept=".docx,.txt,.md,.csv,text/plain" multiple hidden>
-    <div class="chips" id="pending"></div>
+    <div class="files" id="pending"></div>
     <div>
-      <label for="pasteText">…или вставьте текст протокола</label>
-      <textarea id="pasteText" placeholder="Скопируйте текст из PDF или письма и вставьте сюда"></textarea>
+      <label for="pasteText">…или вставьте текст протокола (например, из PDF)</label>
+      <textarea id="pasteText"></textarea>
     </div>
     <div class="btns">
       <button class="btn" id="impCancel">Отмена</button>
@@ -166,35 +168,37 @@ dialog::backdrop{background:rgba(10,12,18,.5)}
 'use strict';
 /* ---------- данные ---------- */
 const KEY = 'planner.v1';
+const DEFAULT_NAME = 'Еспергенова Балнур';
 const CATS = [
   {id:'work',   name:'Работа',   color:'#3b82f6'},
   {id:'health', name:'Здоровье', color:'#22c55e'},
   {id:'family', name:'Семья',    color:'#ec4899'},
   {id:'friends',name:'Друзья',   color:'#f59e0b'},
   {id:'home',   name:'Дом',      color:'#8b5cf6'},
-  {id:'other',  name:'Другое',   color:'#94a3b8'},
 ];
-const catOf = id => CATS.find(c => c.id === id) || CATS[5];
-let state = {tasks: [], settings: {names: ''}};
-let ui = {cat: 'all', tab: 'open', q: ''};
+const catOf = id => CATS.find(c => c.id === id) || CATS[0];
+let state = {tasks: [], settings: {names: DEFAULT_NAME}};
+let ui = {cat: 'all', showDone: false};
 
 function load(){
   try{
     const s = JSON.parse(localStorage.getItem(KEY));
-    if(s && Array.isArray(s.tasks)) state = {tasks: s.tasks, settings: Object.assign({names:''}, s.settings)};
+    if(s && Array.isArray(s.tasks)) state = {tasks: s.tasks, settings: Object.assign({names: DEFAULT_NAME}, s.settings)};
   }catch(e){}
 }
 function save(){
   try{ localStorage.setItem(KEY, JSON.stringify(state)); }
-  catch(e){ toast('Не удалось сохранить в браузере — нажмите «Сохранить копию»'); }
+  catch(e){ toast('Не удалось сохранить в браузере — нажмите ⋯ → «Сохранить копию»'); }
 }
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,6);
 
-/* ---------- даты ---------- */
+/* ---------- даты и время ---------- */
 const pad = n => String(n).padStart(2,'0');
 const iso = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
 const addDays = (d,n) => { const x = new Date(d); x.setDate(x.getDate()+n); return x; };
 const todayISO = () => iso(new Date());
+const nowHM = () => { const d = new Date(); return pad(d.getHours()) + ':' + pad(d.getMinutes()); };
+const fmtDate = s => s ? `${s.slice(8,10)}.${s.slice(5,7)}.${s.slice(0,4)}` : '';
 const MONTH_STEMS = ['январ','феврал','март','апрел','ма[яй]','июн','июл','август','сентябр','октябр','ноябр','декабр'];
 const PREFIX = '(?:(?:в\\s+срок\\s+)?(?:до|к)|не\\s+позднее|срок(?:\\s+исполнения)?\\s*[:\\-–—]?)\\s*';
 
@@ -207,20 +211,34 @@ function guessYear(m,d){
   if((now - new Date(y,m-1,d)) / 864e5 > 90) y++;
   return y;
 }
-/* Ищет дату в тексте. opts.relative — «сегодня/завтра», opts.bare — ячейка целиком может быть датой без года */
+/* дата, введённая руками: 10.11.2026, 10.11.26, 10.11 → ISO; '' пусто; null — не распознано */
+function parseUserDate(s){
+  s = s.trim(); if(!s) return '';
+  const m = /^(\d{1,2})[./\-](\d{1,2})(?:[./\-](\d{2}|\d{4}))?$/.exec(s); if(!m) return null;
+  let y = m[3] ? +m[3] : guessYear(+m[2], +m[1]); if(y < 100) y += 2000;
+  return mkISO(y, +m[2], +m[1]);
+}
+/* время, введённое руками: 9, 9:30, 9.30, 0930 → 'HH:MM' */
+function normTime(s){
+  s = s.trim(); if(!s) return '';
+  let h, m;
+  let r = /^(\d{1,2})$/.exec(s); if(r){ h = +r[1]; m = 0; }
+  else if((r = /^(\d{1,2})[:.\-](\d{2})$/.exec(s))){ h = +r[1]; m = +r[2]; }
+  else if((r = /^(\d{1,2})(\d{2})$/.exec(s))){ h = +r[1]; m = +r[2]; }
+  else return null;
+  return (h < 24 && m < 60) ? pad(h) + ':' + pad(m) : null;
+}
+/* Ищет дату в тексте. opts.relative — «сегодня/завтра», opts.bare — вся строка может быть датой без года */
 function parseDate(s, opts = {}){
   let m;
-  // 15.11.2026 / 15/11/26
   m = new RegExp('(?<![\\d.])(?:'+PREFIX+')?(\\d{1,2})[./](\\d{1,2})[./](\\d{4}|\\d{2})(?!\\d)','iu').exec(s);
   if(m){ let y = +m[3]; if(y < 100) y += 2000; const r = mkISO(y,+m[2],+m[1]); if(r) return {iso:r, text:m[0]}; }
-  // 15 ноября [2026]
   m = new RegExp('(?<!\\d)(?:'+PREFIX+')?(\\d{1,2})\\s+('+MONTH_STEMS.join('|')+')\\p{L}*(?:\\s+(\\d{4})(?!\\d))?','iu').exec(s);
   if(m){
     const mi = MONTH_STEMS.findIndex(st => new RegExp('^'+st,'i').test(m[2]));
     const y = m[3] ? +m[3] : guessYear(mi+1, +m[1]);
     const r = mkISO(y, mi+1, +m[1]); if(r) return {iso:r, text:m[0]};
   }
-  // до 15.11
   m = new RegExp('(?<![\\d.])'+PREFIX+'(\\d{1,2})[./](\\d{1,2})(?![\\d]|[./]\\d)','iu').exec(s);
   if(m){ const r = mkISO(guessYear(+m[2],+m[1]), +m[2], +m[1]); if(r) return {iso:r, text:m[0]}; }
   if(opts.bare){
@@ -233,7 +251,11 @@ function parseDate(s, opts = {}){
   }
   return null;
 }
-const fmtShort = isoStr => isoStr ? isoStr.slice(8,10)+'.'+isoStr.slice(5,7) : '';
+/* время в тексте: «в 14:00», «10:30» */
+function parseTime(s){
+  const m = /(?<![\p{L}\d.:])(?:(?:в|к|до|на)\s+)?([01]?\d|2[0-3]):([0-5]\d)(?![\d:])/iu.exec(s);
+  return m ? {time: pad(+m[1]) + ':' + m[2], text: m[0]} : null;
+}
 
 /* ---------- мелкие помощники ---------- */
 function el(tag, props = {}, ...kids){
@@ -257,112 +279,142 @@ function toast(msg, actionText, action){
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => t.remove(), 6000);
 }
-const tint = hex => hex + '26';
+const tint = hex => hex + '30';
+const flashBad = inp => { inp.classList.add('bad'); setTimeout(() => inp.classList.remove('bad'), 900); };
+const blurOnEnter = e => { if(e.key === 'Enter'){ e.preventDefault(); e.target.blur(); } };
+
+/* поле даты (дд.мм.гггг + календарь) и поле времени (чч:мм) */
+function dateField(val, onCommit, cls = ''){
+  const txt = el('input', {type:'text', class:cls, value:fmtDate(val), placeholder:'дд.мм.гггг', title:'Срок, например 10.11.2026',
+    onkeydown: blurOnEnter,
+    onchange: e => {
+      const r = parseUserDate(e.target.value);
+      if(r === null){ e.target.value = fmtDate(val); flashBad(e.target); return; }
+      e.target.value = fmtDate(r); val = r; onCommit(r);
+    }});
+  const pick = el('input', {type:'date', class:'pk', value:val || '', tabIndex:-1,
+    onchange: e => { txt.value = fmtDate(e.target.value); val = e.target.value; onCommit(val); }});
+  const btn = el('button', {type:'button', class:'cal', title:'Выбрать в календаре', textContent:'📅',
+    onclick: () => { try{ pick.showPicker(); }catch(_){ pick.focus(); } }});
+  return el('span', {class:'dt'}, txt, btn, pick);
+}
+function timeField(val, onCommit, cls = ''){
+  return el('input', {type:'text', class:'t ' + cls, value:val || '', placeholder:'чч:мм', title:'Время (необязательно), например 14:30',
+    onkeydown: blurOnEnter,
+    onchange: e => {
+      const r = normTime(e.target.value);
+      if(r === null){ e.target.value = val || ''; flashBad(e.target); return; }
+      e.target.value = r; val = r; onCommit(r);
+    }});
+}
 
 /* ---------- список ---------- */
 function mutate(fn){ fn(); save(); render(); }
-
-function visible(){
-  const q = ui.q.trim().toLowerCase();
-  return state.tasks.filter(t =>
-    (ui.cat === 'all' || t.cat === ui.cat) &&
-    (!q || t.title.toLowerCase().includes(q)) &&
-    (ui.tab === 'all' || (ui.tab === 'done') === t.done));
-}
-const byDue = (a,b) => (a.due || '9999').localeCompare(b.due || '9999') || a.created - b.created;
-
-function groupsOf(list){
-  const today = todayISO(), week = iso(addDays(new Date(), 7));
-  const open = list.filter(t => !t.done).sort(byDue);
-  const g = [
-    {name:'Просрочено', bad:true, items: open.filter(t => t.due && t.due < today)},
-    {name:'Сегодня',    items: open.filter(t => t.due === today)},
-    {name:'Ближайшие 7 дней', items: open.filter(t => t.due > today && t.due <= week)},
-    {name:'Позже',      items: open.filter(t => t.due > week)},
-    {name:'Без срока',  items: open.filter(t => !t.due)},
-  ];
-  const done = list.filter(t => t.done).sort((a,b) => (b.closedAt||0) - (a.closedAt||0));
-  g.push({name: ui.tab === 'done' ? 'Закрытые' : 'Закрытые', items: done});
-  return g.filter(x => x.items.length);
-}
+const isLate = t => !t.done && t.due && (t.due < todayISO() || (t.due === todayISO() && t.time && t.time < nowHM()));
+const byDue = (a,b) => (a.due || '9999').localeCompare(b.due || '9999') ||
+  (a.time || '99:99').localeCompare(b.time || '99:99') || a.created - b.created;
+const inCat = t => ui.cat === 'all' || t.cat === ui.cat;
 
 function rowFor(t){
   const c = catOf(t.cat);
-  const today = todayISO();
-  const title = el('input', {class:'title', type:'text', value:t.title,
-    onchange: e => { const v = e.target.value.trim(); mutate(() => { if(v) t.title = v; }); },
-    onkeydown: e => { if(e.key === 'Enter') e.target.blur(); }});
-  const sel = el('select', {class:'cat', title:'Вид задачи',
-    onchange: e => mutate(() => { t.cat = e.target.value; })});
+  const cls = isLate(t) ? 'late' : (!t.done && t.due === todayISO() ? 'soon' : '');
+  const sel = el('select', {class:'cat', title:'Вид задачи', onchange: e => mutate(() => { t.cat = e.target.value; })});
   CATS.forEach(k => sel.append(el('option', {value:k.id, text:k.name, selected:k.id === t.cat})));
   sel.style.background = tint(c.color);
-  const date = el('input', {type:'date', value:t.due || '', title:'Срок',
-    class: !t.done && t.due && t.due < today ? 'late' : (!t.done && t.due === today ? 'today' : ''),
-    onchange: e => mutate(() => { t.due = e.target.value; })});
-  const row = el('div', {class:'row' + (t.done ? ' done' : '')},
-    el('input', {type:'checkbox', checked:t.done, title: t.done ? 'Открыть снова' : 'Закрыть',
-      onchange: e => mutate(() => { t.done = e.target.checked; t.closedAt = t.done ? Date.now() : null; })}),
-    title, sel, date);
-  if(t.src) row.append(el('span', {class:'badge', text:'протокол', title:'Из: ' + t.src}));
-  row.append(el('button', {class:'del', text:'×', title:'Удалить', onclick: () => {
-    const idx = state.tasks.indexOf(t);
-    mutate(() => state.tasks.splice(idx,1));
-    toast('Задача удалена', 'Отменить', () => mutate(() => state.tasks.splice(idx,0,t)));
-  }}));
+  const meta = el('div', {class:'meta'}, sel,
+    dateField(t.due, v => mutate(() => { t.due = v; if(!v) t.time = ''; }), cls),
+    timeField(t.time, v => mutate(() => { t.time = v; if(v && !t.due) t.due = todayISO(); }), cls));
+  if(t.src) meta.append(el('span', {class:'badge', text:'протокол', title:'Из: ' + t.src}));
+  const row = el('div', {class:'row' + (t.done ? ' done' : ''), style:'border-left-color:' + c.color},
+    el('div', {class:'top'},
+      el('input', {type:'checkbox', checked:t.done, title: t.done ? 'Открыть снова' : 'Закрыть',
+        onchange: e => mutate(() => { t.done = e.target.checked; t.closedAt = t.done ? Date.now() : null; })}),
+      el('input', {class:'title', type:'text', value:t.title, onkeydown: blurOnEnter,
+        onchange: e => { const v = e.target.value.trim(); mutate(() => { if(v) t.title = v; }); }}),
+      el('button', {class:'del', text:'×', title:'Удалить', onclick: () => {
+        const idx = state.tasks.indexOf(t);
+        mutate(() => state.tasks.splice(idx,1));
+        toast('Задача удалена', 'Отменить', () => mutate(() => state.tasks.splice(idx,0,t)));
+      }})),
+    meta);
   return row;
 }
 
 function render(){
-  // навигация
-  const nav = $('nav'); nav.replaceChildren();
-  const openCount = id => state.tasks.filter(t => !t.done && (id === 'all' || t.cat === id)).length;
-  const mk = (id,name,color) => el('button', {class:'nav' + (ui.cat === id ? ' on' : ''), onclick: () => { ui.cat = id; render(); }},
-    el('span', {class:'dot', style:'background:' + color}), name, el('span', {class:'n', text: openCount(id) || ''}));
-  nav.append(mk('all','Все','var(--muted)'), ...CATS.map(c => mk(c.id, c.name, c.color)));
-  // select в быстром вводе
-  const qc = $('qCat');
-  if(!qc.options.length) CATS.forEach(c => qc.append(el('option', {value:c.id, text:c.name})));
-  if(ui.cat !== 'all') qc.value = ui.cat;
-  // вкладки
-  document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === ui.tab));
-  // просрочено
-  const late = state.tasks.filter(t => !t.done && t.due && t.due < todayISO()).length;
-  const chip = $('overdueChip'); chip.hidden = !late;
-  chip.textContent = late ? `Просрочено: ${late}` : '';
-  // список
+  const openAll = state.tasks.filter(t => !t.done);
+  $('count').textContent = openAll.length ? `открыто: ${openAll.length}` : '';
+
+  // виды
+  const chips = $('chips'); chips.replaceChildren();
+  const n = id => openAll.filter(t => id === 'all' || t.cat === id).length;
+  const chip = (id, name, color) => el('button', {class:'chip' + (ui.cat === id ? ' on' : ''), type:'button',
+    onclick: () => { ui.cat = id; if(id !== 'all') $('qCat').value = id; render(); }},
+    ...(color ? [el('i', {style:'background:' + color})] : []), name, el('b', {text: n(id) || ''}));
+  chips.append(chip('all', 'Все'), ...CATS.map(c => chip(c.id, c.name, c.color)));
+
+  // открытые задачи по срокам
+  const today = todayISO(), week = iso(addDays(new Date(), 7));
+  const open = openAll.filter(inCat).sort(byDue);
+  const groups = [
+    {name:'Просрочено', bad:true, items: open.filter(isLate)},
+    {name:'Сегодня', items: open.filter(t => t.due === today && !isLate(t))},
+    {name:'Ближайшие 7 дней', items: open.filter(t => t.due > today && t.due <= week)},
+    {name:'Позже', items: open.filter(t => t.due > week)},
+    {name:'Без срока', items: open.filter(t => !t.due)},
+  ].filter(g => g.items.length);
   const list = $('list'); list.replaceChildren();
-  const groups = groupsOf(visible());
-  if(!groups.length){
-    list.append(el('div', {class:'empty', text: ui.tab === 'done' ? 'Закрытых задач нет' : 'Задач нет — добавьте первую выше'}));
-    return;
-  }
+  if(!groups.length) list.append(el('div', {class:'empty', text:'Открытых задач нет'}));
   for(const g of groups){
     list.append(el('section', {class:'group'}, el('h3', {class: g.bad ? 'bad' : '', text: `${g.name} · ${g.items.length}`}),
       ...g.items.map(rowFor)));
   }
+
+  // закрытые
+  const done = state.tasks.filter(t => t.done && inCat(t)).sort((a,b) => (b.closedAt||0) - (a.closedAt||0));
+  $('toggleDone').textContent = (ui.showDone ? '▾ ' : '▸ ') + `Закрытые · ${done.length}`;
+  $('clearDone').hidden = !(ui.showDone && done.length);
+  const dl = $('doneList'); dl.hidden = !ui.showDone; dl.replaceChildren();
+  if(ui.showDone) done.forEach(t => dl.append(rowFor(t)));
 }
+$('toggleDone').onclick = () => { ui.showDone = !ui.showDone; render(); };
+$('clearDone').onclick = () => {
+  const gone = state.tasks.filter(t => t.done && inCat(t));
+  if(!confirm(`Удалить закрытые задачи: ${gone.length}? Это нельзя отменить.`)) return;
+  mutate(() => { state.tasks = state.tasks.filter(t => !gone.includes(t)); });
+};
 
 /* ---------- быстрый ввод ---------- */
+let qDue = '', qTime = '';
+const qDateEl = dateField('', v => { qDue = v; });
+const qTimeEl = timeField('', v => { qTime = v; });
+$('qrow').insertBefore(qDateEl, $('qrow').querySelector('.grow'));
+$('qrow').insertBefore(qTimeEl, $('qrow').querySelector('.grow'));
+CATS.forEach(c => $('qCat').append(el('option', {value:c.id, text:c.name})));
+
 $('qa').addEventListener('submit', e => {
   e.preventDefault();
   let text = $('qText').value.trim(); if(!text) return;
-  let due = $('qDate').value;
+  let due = qDue, time = qTime;
+  const t = parseTime(text);
+  if(t){ if(!time) time = t.time; text = text.replace(t.text, ' '); }
   const d = parseDate(text, {relative:true});
-  if(d){
-    if(!due) due = d.iso;
-    const cleaned = text.replace(d.text, ' ').replace(/\s{2,}/g,' ').replace(/^[\s,;:—–-]+|[\s,;:—–-]+$/g,'');
-    if(cleaned.length >= 2) text = cleaned;
+  if(d){ if(!due) due = d.iso; text = text.replace(d.text, ' '); }
+  if(t || d){
+    const cleaned = text.replace(/\s{2,}/g,' ').replace(/^[\s,;:—–-]+|[\s,;:—–-]+$/g,'');
+    text = cleaned.length >= 2 ? cleaned : $('qText').value.trim();
   }
+  if(time && !due) due = todayISO();
   const cat = $('qCat').value;
-  mutate(() => state.tasks.push({id:uid(), title:text, cat, due, done:false, created:Date.now(), closedAt:null}));
-  $('qText').value = ''; $('qDate').value = ''; $('qText').focus();
-  if(ui.cat !== 'all' && ui.cat !== cat) ui.cat = cat, render();
+  if(ui.cat !== 'all') ui.cat = cat;
+  mutate(() => state.tasks.push({id:uid(), title:text, cat, due, time, done:false, created:Date.now(), closedAt:null}));
+  $('qText').value = ''; qDue = qTime = '';
+  qDateEl.querySelector('input[type=text]').value = ''; qTimeEl.value = '';
+  $('qText').focus();
 });
-document.querySelectorAll('#tabs button').forEach(b => b.onclick = () => { ui.tab = b.dataset.tab; render(); });
-$('search').addEventListener('input', e => { ui.q = e.target.value; render(); });
-$('overdueChip').onclick = () => { ui.tab = 'open'; ui.cat = 'all'; render(); };
 
-/* ---------- копия данных ---------- */
+/* ---------- меню и копия данных ---------- */
+$('btnMenu').onclick = e => { e.stopPropagation(); $('menu').hidden = !$('menu').hidden; };
+document.addEventListener('click', () => { $('menu').hidden = true; });
 $('btnExport').onclick = () => {
   const blob = new Blob([JSON.stringify(state, null, 1)], {type:'application/json'});
   const a = el('a', {href: URL.createObjectURL(blob), download: `planner-${todayISO()}.json`});
@@ -375,7 +427,7 @@ $('restoreFile').onchange = async e => {
     const s = JSON.parse(await f.text());
     if(!Array.isArray(s.tasks)) throw 0;
     if(!confirm(`Заменить текущие задачи (${state.tasks.length}) задачами из копии (${s.tasks.length})?`)) return;
-    state = {tasks: s.tasks, settings: Object.assign({names:''}, s.settings)};
+    state = {tasks: s.tasks, settings: Object.assign({names: DEFAULT_NAME}, s.settings)};
     save(); render(); toast('Копия загружена');
   }catch(err){ toast('Это не файл копии планера'); }
 };
@@ -384,11 +436,20 @@ $('restoreFile').onchange = async e => {
 const escRe = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const letters = s => (s.match(/\p{L}/gu) || []).length;
 
+/* Из «Еспергенова Балнур» делает поиск по: фамилии, имени, любому их сочетанию (в т.ч. в падежах)
+   и по инициалам: «Еспергенова Б.», «Б. Еспергенова», «Е.Б.», «Б.Е.» */
 function nameMatcher(){
-  const parts = state.settings.names.split(/[,;\n]+/).map(s => s.trim()).filter(s => s.length >= 3);
-  if(!parts.length) return null;
-  const alt = parts.map(p => escRe(p).replace(/\s+/g, '\\s+')).join('|');
-  const src = '(?<!\\p{L})(?:' + alt + ')\\p{L}{0,3}(?:\\s*[А-ЯЁA-Z]\\.\\s*(?:[А-ЯЁA-Z]\\.)?)?(?!\\p{L})';
+  const words = state.settings.names.match(/\p{L}{2,}/gu) || [];
+  if(!words.length) return null;
+  const stems = words.filter(w => w.length >= 3).map(w =>
+    escRe(w.length > 4 && /[аяйь]$/i.test(w) ? w.slice(0, -1) : w));
+  const INI = '[А-ЯЁA-Z]\\.\\s*';
+  const parts = [];
+  if(stems.length) parts.push('(?:' + INI + '){0,2}(?:' + stems.join('|') + ')\\p{L}{0,3}(?:\\s*[А-ЯЁA-Z]\\.\\s*(?:[А-ЯЁA-Z]\\.)?)?');
+  const ini = words.map(w => escRe(w[0])), pairs = [];
+  ini.forEach((a,i) => ini.forEach((b,j) => { if(i !== j) pairs.push(a + '\\.\\s*' + b + '\\.?'); }));
+  if(pairs.length) parts.push('(?:' + pairs.join('|') + ')');
+  const src = '(?<!\\p{L})(?:' + parts.join('|') + ')(?!\\p{L})';
   const test = new RegExp(src, 'iu'), all = new RegExp(src, 'giu');
   return {test: s => test.test(s), strip: s => s.replace(all, ' ')};
 }
@@ -404,9 +465,13 @@ function cleanText(s){
        .replace(/[.;,]+$/, '').trim();
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
-function splitDate(s){
-  const d = parseDate(s);
-  return d ? {s: s.replace(d.text, ' '), iso: d.iso} : {s, iso: ''};
+/* вырезает из строки время и дату */
+function splitDT(s){
+  const t = parseTime(s);
+  if(t) s = s.replace(t.text, ' ');
+  const d = parseDate(s, {bare:true});
+  if(d) s = s.replace(d.text, ' ');
+  return {s, date: d ? d.iso : '', time: t ? t.time : ''};
 }
 
 const SKIP = /^(?:присутствова|присутствуют|участник|приглашен|отсутствова|список|повестк|подпис|составил|секретар|протокол\s*№)/iu;
@@ -420,14 +485,14 @@ function extract(text, src){
     if(line.length < 4 || !re.test(line)) continue;
     if(SKIP.test(line.replace(/^\s*(?:\d+[.)]|[-–—•*·▪●])\s*/u, ''))) continue;
 
-    let body = line, orig = line, due = '';
-    const only = cleanText(splitDate(re.strip(stripLabels(line))).s);
-    if(letters(only) < 4){                       // строка вида «Ответственный: Иванов» — задача выше
+    let body = line, orig = line, due = '', time = '';
+    const only = cleanText(splitDT(re.strip(stripLabels(line))).s);
+    if(letters(only) < 4){                       // строка вида «Ответственный: Еспергенова» — задача выше
       let j = i - 1; while(j >= 0 && !lines[j]) j--;
       if(j < 0) continue;
       body = lines[j]; orig = lines[j] + '  ⟵  ' + line;
       for(let k = i + 1; k <= i + 2 && k < lines.length; k++){
-        if(/срок/i.test(lines[k])){ const d = parseDate(lines[k], {bare:true}); if(d){ due = d.iso; break; } }
+        if(/срок/i.test(lines[k])){ const x = splitDT(lines[k]); if(x.date){ due = x.date; time = x.time; break; } }
       }
     }
 
@@ -435,16 +500,16 @@ function extract(text, src){
     if(/\||\t/.test(body)){                      // строка таблицы
       const texts = [];
       for(const c of body.split(/\s*\|\s*|\t+/).map(s => s.trim()).filter(Boolean)){
-        const d = parseDate(c, {bare:true});
-        if(d && letters(c.replace(d.text, '')) < 3){ due = due || d.iso; continue; }
-        const sd = splitDate(c); due = due || sd.iso;
-        const t = cleanText(re.strip(stripLabels(sd.s)));
+        const x = splitDT(c);
+        if(x.date || x.time){ due = due || x.date; time = time || x.time; }
+        if(letters(x.s) < 3) continue;           // ячейка — только дата/время/номер
+        const t = cleanText(re.strip(stripLabels(x.s)));
         if(letters(t) >= 3) texts.push(t);
       }
       title = texts.sort((a,b) => b.length - a.length)[0] || '';
     }else{
-      const sd = splitDate(body); due = due || sd.iso;
-      title = cleanText(re.strip(stripLabels(sd.s)));
+      const x = splitDT(body); due = due || x.date; time = time || x.time;
+      title = cleanText(re.strip(stripLabels(x.s)));
     }
 
     const words = title.split(/[\s,;]+/).filter(Boolean);
@@ -452,7 +517,7 @@ function extract(text, src){
     if(words.length >= 2 && words.every(w => /^[А-ЯЁA-Z]/.test(w))) continue;   // просто список фамилий
     const key = title.toLowerCase();
     if(seen.has(key)) continue; seen.add(key);
-    out.push({title, due, line: orig.length > 170 ? orig.slice(0,170) + '…' : orig, src});
+    out.push({title, due, time: due ? time : '', line: orig.length > 170 ? orig.slice(0,170) + '…' : orig, src});
   }
   return out;
 }
@@ -472,7 +537,7 @@ async function readDocx(file){
   const buf = await file.arrayBuffer(), u8 = new Uint8Array(buf), dv = new DataView(buf);
   let e = u8.length - 22;
   while(e >= 0 && dv.getUint32(e, true) !== 0x06054b50) e--;
-  if(e < 0) throw new Error('не docx');
+  if(e < 0) throw new Error('это не файл .docx');
   const n = dv.getUint16(e + 10, true); let p = dv.getUint32(e + 16, true), xml = null;
   const dec = new TextDecoder();
   for(let i = 0; i < n; i++){
@@ -487,7 +552,7 @@ async function readDocx(file){
     }
     p += 46 + nl + xl + cl;
   }
-  if(!xml) throw new Error('нет document.xml');
+  if(!xml) throw new Error('в файле нет текста документа');
   const W = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
   const doc = new DOMParser().parseFromString(xml, 'application/xml');
   const para = pEl => {
@@ -515,7 +580,8 @@ async function readDocx(file){
 async function readFile(file){
   const name = file.name.toLowerCase();
   if(name.endsWith('.docx')) return readDocx(file);
-  if(name.endsWith('.doc') || name.endsWith('.pdf')) throw new Error('Для .doc и .pdf скопируйте текст и вставьте в поле ниже');
+  if(name.endsWith('.doc')) throw new Error('старый формат .doc — сохраните файл как .docx');
+  if(name.endsWith('.pdf')) throw new Error('для .pdf скопируйте текст и вставьте в поле ниже');
   return readText(file);
 }
 
@@ -524,13 +590,12 @@ let pending = [], cands = [];
 const dlg = $('imp');
 function showStep(b){ $('impA').hidden = b; $('impB').hidden = !b; }
 function renderPending(){
-  $('pending').replaceChildren(...pending.map((p, i) => el('span', {class:'chip', text: p.name + '  ×', style:'cursor:pointer',
+  $('pending').replaceChildren(...pending.map((p, i) => el('span', {class:'file', text: p.name + '  ×',
     title:'Убрать', onclick: () => { pending.splice(i,1); renderPending(); }})));
 }
 $('btnImport').onclick = () => {
   $('myNames').value = state.settings.names; pending = []; renderPending(); $('pasteText').value = '';
   showStep(false); dlg.showModal();
-  if(!state.settings.names) $('myNames').focus();
 };
 $('impCancel').onclick = () => dlg.close();
 $('impBack').onclick = () => showStep(false);
@@ -553,7 +618,7 @@ async function addFiles(files){
 
 function runImport(){
   state.settings.names = $('myNames').value.trim(); save();
-  if(!state.settings.names){ $('myNames').focus(); toast('Укажите вашу фамилию'); return; }
+  if(!state.settings.names){ $('myNames').focus(); toast('Укажите ваше имя или фамилию'); return; }
   const sources = [...pending];
   if($('pasteText').value.trim()) sources.push({name:'вставленный текст', text:$('pasteText').value});
   if(!sources.length){ toast('Добавьте файл или вставьте текст'); return; }
@@ -569,13 +634,13 @@ function renderCands(){
   const box = $('cands'); box.replaceChildren();
   $('impTitle').textContent = cands.length ? `Найдено задач: ${cands.length}` : 'Ничего не найдено';
   if(!cands.length){
-    box.append(el('div', {class:'empty', text:'Строк с вашей фамилией не нашлось. Проверьте написание (достаточно фамилии, склонения учитываются).'}));
+    box.append(el('div', {class:'empty', text:'Строк с вашим именем не нашлось. Проверьте, как имя записано в протоколе.'}));
   }
   cands.forEach(c => {
     box.append(el('div', {class:'cand' + (c.dup ? ' dup' : '')},
       el('input', {type:'checkbox', checked:c.on, onchange: e => { c.on = e.target.checked; updAdd(); }}),
-      el('input', {type:'text', value:c.title, onchange: e => { c.title = e.target.value.trim() || c.title; }}),
-      el('input', {type:'date', value:c.due, onchange: e => { c.due = e.target.value; }}),
+      el('input', {type:'text', class:'ttl', value:c.title, onchange: e => { c.title = e.target.value.trim() || c.title; }}),
+      el('div', {class:'meta'}, dateField(c.due, v => { c.due = v; if(!v) c.time = ''; }), timeField(c.time, v => { c.time = v; })),
       el('div', {class:'src', title:c.line, text: (c.dup ? 'Уже есть в планере · ' : '') + c.src + ': ' + c.line})));
   });
   updAdd();
@@ -587,14 +652,15 @@ function updAdd(){
 }
 $('impAdd').onclick = () => {
   const chosen = cands.filter(c => c.on);
-  mutate(() => chosen.forEach(c => state.tasks.push({id:uid(), title:c.title, cat:'work', due:c.due || '', done:false,
-    created:Date.now(), closedAt:null, src:c.src})));
-  dlg.close(); ui.cat = 'work'; ui.tab = 'open'; render();
+  mutate(() => chosen.forEach(c => state.tasks.push({id:uid(), title:c.title, cat:'work', due:c.due || '',
+    time: c.due ? (c.time || '') : '', done:false, created:Date.now(), closedAt:null, src:c.src})));
+  dlg.close(); ui.cat = 'work'; $('qCat').value = 'work'; render();
   toast(`Добавлено задач: ${chosen.length}`);
 };
 
 /* ---------- старт ---------- */
 load(); render();
+setInterval(() => { if(!dlg.open && !document.activeElement?.matches('input,select')) render(); }, 60000);  // обновляет «просрочено»
 </script>
 </body>
 </html>
