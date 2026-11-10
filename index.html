@@ -1,0 +1,600 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Планер задач</title>
+<style>
+:root{
+  --bg:#f6f7f9; --panel:#ffffff; --text:#1c2230; --muted:#6b7385; --line:#e4e7ee;
+  --accent:#3b6ef6; --accent-ink:#ffffff; --danger:#d93f3f; --warn:#c77a0a; --hover:#f0f3fa;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#14171d; --panel:#1c2029; --text:#e6e9f0; --muted:#8f98ab; --line:#2b3140;
+    --accent:#6f95ff; --accent-ink:#0d1220; --danger:#ff6b6b; --warn:#f0a93b; --hover:#242a37; }
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+button,input,select,textarea{font:inherit;color:inherit}
+.app{display:grid;grid-template-columns:230px 1fr;min-height:100%}
+aside{background:var(--panel);border-right:1px solid var(--line);padding:20px 12px;display:flex;flex-direction:column;gap:6px;position:sticky;top:0;height:100vh}
+aside h1{font-size:18px;margin:0 8px 14px}
+.nav{display:flex;align-items:center;gap:10px;width:100%;padding:8px 10px;border:0;background:none;border-radius:8px;cursor:pointer;text-align:left}
+.nav:hover{background:var(--hover)}
+.nav.on{background:var(--hover);font-weight:600}
+.dot{width:10px;height:10px;border-radius:50%;flex:none;background:var(--muted)}
+.nav .n{margin-left:auto;color:var(--muted);font-size:13px}
+.spacer{flex:1}
+.side-btn{width:100%;padding:9px 10px;border-radius:8px;border:1px solid var(--line);background:none;cursor:pointer;text-align:left}
+.side-btn:hover{background:var(--hover)}
+.side-btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600;text-align:center}
+.side-btn.primary:hover{filter:brightness(1.08)}
+.small{font-size:12px;color:var(--muted);margin:6px 8px 0}
+main{padding:24px clamp(16px,4vw,48px);max-width:960px;width:100%}
+#qa{display:flex;gap:8px;flex-wrap:wrap;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px}
+#qa input[type=text]{flex:1 1 260px;border:0;outline:0;background:none;padding:6px 8px;font-size:16px}
+.ctl{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:6px 8px}
+#qa button{background:var(--accent);color:var(--accent-ink);border:0;border-radius:8px;padding:6px 16px;font-weight:600;cursor:pointer}
+.tools{display:flex;align-items:center;gap:12px;margin:18px 2px 6px;flex-wrap:wrap}
+.tabs{display:flex;background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.tabs button{border:0;background:none;padding:6px 14px;cursor:pointer}
+.tabs button.on{background:var(--accent);color:var(--accent-ink);font-weight:600}
+#search{margin-left:auto;width:200px}
+.overdue-chip{color:var(--danger);font-size:13px;cursor:pointer;background:none;border:0}
+.group h3{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:22px 4px 6px;font-weight:600}
+.group h3.bad{color:var(--danger)}
+.row{display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:6px 10px;margin-bottom:6px}
+.row:hover{border-color:var(--accent)}
+.row input[type=checkbox]{width:18px;height:18px;accent-color:var(--accent);flex:none;cursor:pointer}
+.row .title{flex:1;min-width:0;border:0;background:none;outline:0;padding:4px 2px;border-radius:4px}
+.row .title:focus{background:var(--hover)}
+.row.done .title{text-decoration:line-through;color:var(--muted)}
+.row select.cat{border:0;border-radius:12px;padding:3px 6px;font-size:13px;cursor:pointer;color:var(--text)}
+.row input[type=date]{border:1px solid transparent;background:none;border-radius:6px;padding:3px 4px;font-size:13px;color:var(--muted);width:128px}
+.row input[type=date]:hover,.row input[type=date]:focus{border-color:var(--line)}
+.row input[type=date].late{color:var(--danger);font-weight:600}
+.row input[type=date].today{color:var(--warn);font-weight:600}
+.badge{font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:10px;padding:1px 7px;white-space:nowrap}
+.del{border:0;background:none;color:var(--muted);cursor:pointer;font-size:18px;line-height:1;opacity:0;padding:2px 6px;border-radius:6px}
+.row:hover .del{opacity:1}
+.del:hover{color:var(--danger);background:var(--hover)}
+.empty{text-align:center;color:var(--muted);padding:48px 0}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:10px 16px;border-radius:10px;display:flex;gap:14px;align-items:center;box-shadow:0 6px 24px rgba(0,0,0,.25);z-index:50}
+.toast button{background:none;border:0;color:inherit;text-decoration:underline;cursor:pointer;padding:0}
+dialog{border:1px solid var(--line);border-radius:14px;padding:0;background:var(--panel);color:var(--text);width:min(720px,94vw);max-height:90vh}
+dialog::backdrop{background:rgba(10,12,18,.5)}
+.dlg{padding:20px 22px;display:flex;flex-direction:column;gap:12px;max-height:88vh}
+.dlg h2{margin:0;font-size:18px}
+.dlg label{font-size:13px;color:var(--muted)}
+.dlg input[type=text],.dlg textarea{width:100%;border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:8px 10px}
+.dlg textarea{min-height:90px;resize:vertical}
+.drop{border:2px dashed var(--line);border-radius:12px;padding:22px;text-align:center;color:var(--muted);cursor:pointer}
+.drop.over{border-color:var(--accent);background:var(--hover)}
+.btns{display:flex;gap:8px;justify-content:flex-end}
+.btn{border:1px solid var(--line);background:none;border-radius:8px;padding:8px 16px;cursor:pointer}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
+.btn:disabled{opacity:.5;cursor:default}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font-size:12px;background:var(--hover);border-radius:10px;padding:2px 9px}
+.cands{overflow:auto;display:flex;flex-direction:column;gap:6px;min-height:80px}
+.cand{display:grid;grid-template-columns:20px 1fr 138px;gap:4px 10px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+.cand.dup{opacity:.6}
+.cand input[type=checkbox]{width:18px;height:18px;accent-color:var(--accent)}
+.cand input[type=text],.cand input[type=date]{border:1px solid var(--line);background:var(--bg);border-radius:6px;padding:4px 6px;width:100%}
+.cand .src{grid-column:2 / 4;font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media (max-width:760px){
+  .app{grid-template-columns:1fr}
+  aside{position:static;height:auto;flex-direction:row;flex-wrap:wrap;border-right:0;border-bottom:1px solid var(--line)}
+  aside{align-items:center;padding:12px}
+  aside h1{width:100%;margin-bottom:4px}
+  #nav{display:flex;flex-wrap:wrap;gap:2px;width:100%}
+  .nav{width:auto}
+  .spacer,.small{display:none}
+  .side-btn{width:auto}
+  .row{flex-wrap:wrap}
+  .row .title{flex-basis:60%}
+  #search{margin-left:0;width:100%}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside>
+    <h1>Планер</h1>
+    <div id="nav"></div>
+    <div class="spacer"></div>
+    <button class="side-btn primary" id="btnImport">Задачи из протокола…</button>
+    <button class="side-btn" id="btnExport">Сохранить копию</button>
+    <button class="side-btn" id="btnRestore">Загрузить копию</button>
+    <input type="file" id="restoreFile" accept=".json" hidden>
+    <div class="small">Данные хранятся в этом браузере. Время от времени сохраняйте копию.</div>
+  </aside>
+
+  <main>
+    <form id="qa" autocomplete="off">
+      <input type="text" id="qText" placeholder="Новая задача… например «отчёт до 15.11»" autofocus>
+      <select class="ctl" id="qCat"></select>
+      <input class="ctl" type="date" id="qDate" title="Срок">
+      <button type="submit">Добавить</button>
+    </form>
+
+    <div class="tools">
+      <div class="tabs" id="tabs">
+        <button data-tab="open" class="on">Открытые</button>
+        <button data-tab="done">Закрытые</button>
+        <button data-tab="all">Все</button>
+      </div>
+      <button class="overdue-chip" id="overdueChip" hidden></button>
+      <input class="ctl" type="search" id="search" placeholder="Поиск">
+    </div>
+
+    <div id="list"></div>
+  </main>
+</div>
+
+<dialog id="imp">
+  <div class="dlg" id="impA">
+    <h2>Задачи из протокола</h2>
+    <div>
+      <label for="myNames">Как вас называют в протоколах (фамилия; можно несколько через запятую)</label>
+      <input type="text" id="myNames" placeholder="Например: Иванов, Иванова И.И.">
+    </div>
+    <div class="drop" id="drop">Перетащите сюда протокол (.docx, .txt, .md) или нажмите, чтобы выбрать<br><small>Можно сразу несколько файлов</small></div>
+    <input type="file" id="impFile" accept=".docx,.txt,.md,.csv,text/plain" multiple hidden>
+    <div class="chips" id="pending"></div>
+    <div>
+      <label for="pasteText">…или вставьте текст протокола</label>
+      <textarea id="pasteText" placeholder="Скопируйте текст из PDF или письма и вставьте сюда"></textarea>
+    </div>
+    <div class="btns">
+      <button class="btn" id="impCancel">Отмена</button>
+      <button class="btn primary" id="impRun">Найти мои задачи</button>
+    </div>
+  </div>
+  <div class="dlg" id="impB" hidden>
+    <h2 id="impTitle">Найдено</h2>
+    <div class="cands" id="cands"></div>
+    <div class="btns">
+      <button class="btn" id="impBack">Назад</button>
+      <button class="btn primary" id="impAdd">Добавить</button>
+    </div>
+  </div>
+</dialog>
+
+<script>
+'use strict';
+/* ---------- данные ---------- */
+const KEY = 'planner.v1';
+const CATS = [
+  {id:'work',   name:'Работа',   color:'#3b82f6'},
+  {id:'health', name:'Здоровье', color:'#22c55e'},
+  {id:'family', name:'Семья',    color:'#ec4899'},
+  {id:'friends',name:'Друзья',   color:'#f59e0b'},
+  {id:'home',   name:'Дом',      color:'#8b5cf6'},
+  {id:'other',  name:'Другое',   color:'#94a3b8'},
+];
+const catOf = id => CATS.find(c => c.id === id) || CATS[5];
+let state = {tasks: [], settings: {names: ''}};
+let ui = {cat: 'all', tab: 'open', q: ''};
+
+function load(){
+  try{
+    const s = JSON.parse(localStorage.getItem(KEY));
+    if(s && Array.isArray(s.tasks)) state = {tasks: s.tasks, settings: Object.assign({names:''}, s.settings)};
+  }catch(e){}
+}
+function save(){
+  try{ localStorage.setItem(KEY, JSON.stringify(state)); }
+  catch(e){ toast('Не удалось сохранить в браузере — нажмите «Сохранить копию»'); }
+}
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+
+/* ---------- даты ---------- */
+const pad = n => String(n).padStart(2,'0');
+const iso = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const addDays = (d,n) => { const x = new Date(d); x.setDate(x.getDate()+n); return x; };
+const todayISO = () => iso(new Date());
+const MONTH_STEMS = ['январ','феврал','март','апрел','ма[яй]','июн','июл','август','сентябр','октябр','ноябр','декабр'];
+const PREFIX = '(?:(?:в\\s+срок\\s+)?(?:до|к)|не\\s+позднее|срок(?:\\s+исполнения)?\\s*[:\\-–—]?)\\s*';
+
+function mkISO(y,m,d){
+  const dt = new Date(y, m-1, d);
+  return (dt.getMonth() === m-1 && dt.getDate() === d) ? iso(dt) : null;
+}
+function guessYear(m,d){
+  const now = new Date(); let y = now.getFullYear();
+  if((now - new Date(y,m-1,d)) / 864e5 > 90) y++;
+  return y;
+}
+/* Ищет дату в тексте. opts.relative — «сегодня/завтра», opts.bare — ячейка целиком может быть датой без года */
+function parseDate(s, opts = {}){
+  let m;
+  // 15.11.2026 / 15/11/26
+  m = new RegExp('(?<![\\d.])(?:'+PREFIX+')?(\\d{1,2})[./](\\d{1,2})[./](\\d{4}|\\d{2})(?!\\d)','iu').exec(s);
+  if(m){ let y = +m[3]; if(y < 100) y += 2000; const r = mkISO(y,+m[2],+m[1]); if(r) return {iso:r, text:m[0]}; }
+  // 15 ноября [2026]
+  m = new RegExp('(?<!\\d)(?:'+PREFIX+')?(\\d{1,2})\\s+('+MONTH_STEMS.join('|')+')\\p{L}*(?:\\s+(\\d{4})(?!\\d))?','iu').exec(s);
+  if(m){
+    const mi = MONTH_STEMS.findIndex(st => new RegExp('^'+st,'i').test(m[2]));
+    const y = m[3] ? +m[3] : guessYear(mi+1, +m[1]);
+    const r = mkISO(y, mi+1, +m[1]); if(r) return {iso:r, text:m[0]};
+  }
+  // до 15.11
+  m = new RegExp('(?<![\\d.])'+PREFIX+'(\\d{1,2})[./](\\d{1,2})(?![\\d]|[./]\\d)','iu').exec(s);
+  if(m){ const r = mkISO(guessYear(+m[2],+m[1]), +m[2], +m[1]); if(r) return {iso:r, text:m[0]}; }
+  if(opts.bare){
+    m = /^\s*(\d{1,2})[./](\d{1,2})\s*$/.exec(s);
+    if(m){ const r = mkISO(guessYear(+m[2],+m[1]), +m[2], +m[1]); if(r) return {iso:r, text:m[0]}; }
+  }
+  if(opts.relative){
+    m = /(?<!\p{L})(сегодня|завтра|послезавтра)(?!\p{L})/iu.exec(s);
+    if(m){ const k = {'сегодня':0,'завтра':1,'послезавтра':2}[m[1].toLowerCase()]; return {iso: iso(addDays(new Date(), k)), text:m[0]}; }
+  }
+  return null;
+}
+const fmtShort = isoStr => isoStr ? isoStr.slice(8,10)+'.'+isoStr.slice(5,7) : '';
+
+/* ---------- мелкие помощники ---------- */
+function el(tag, props = {}, ...kids){
+  const e = document.createElement(tag);
+  for(const [k,v] of Object.entries(props)){
+    if(k === 'class') e.className = v;
+    else if(k === 'text') e.textContent = v;
+    else if(k.startsWith('on')) e.addEventListener(k.slice(2), v);
+    else e[k] = v;
+  }
+  e.append(...kids);
+  return e;
+}
+const $ = id => document.getElementById(id);
+let toastTimer;
+function toast(msg, actionText, action){
+  document.querySelectorAll('.toast').forEach(t => t.remove());
+  const t = el('div', {class:'toast'}, el('span', {text: msg}));
+  if(actionText) t.append(el('button', {text: actionText, onclick: () => { action(); t.remove(); }}));
+  document.body.append(t);
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.remove(), 6000);
+}
+const tint = hex => hex + '26';
+
+/* ---------- список ---------- */
+function mutate(fn){ fn(); save(); render(); }
+
+function visible(){
+  const q = ui.q.trim().toLowerCase();
+  return state.tasks.filter(t =>
+    (ui.cat === 'all' || t.cat === ui.cat) &&
+    (!q || t.title.toLowerCase().includes(q)) &&
+    (ui.tab === 'all' || (ui.tab === 'done') === t.done));
+}
+const byDue = (a,b) => (a.due || '9999').localeCompare(b.due || '9999') || a.created - b.created;
+
+function groupsOf(list){
+  const today = todayISO(), week = iso(addDays(new Date(), 7));
+  const open = list.filter(t => !t.done).sort(byDue);
+  const g = [
+    {name:'Просрочено', bad:true, items: open.filter(t => t.due && t.due < today)},
+    {name:'Сегодня',    items: open.filter(t => t.due === today)},
+    {name:'Ближайшие 7 дней', items: open.filter(t => t.due > today && t.due <= week)},
+    {name:'Позже',      items: open.filter(t => t.due > week)},
+    {name:'Без срока',  items: open.filter(t => !t.due)},
+  ];
+  const done = list.filter(t => t.done).sort((a,b) => (b.closedAt||0) - (a.closedAt||0));
+  g.push({name: ui.tab === 'done' ? 'Закрытые' : 'Закрытые', items: done});
+  return g.filter(x => x.items.length);
+}
+
+function rowFor(t){
+  const c = catOf(t.cat);
+  const today = todayISO();
+  const title = el('input', {class:'title', type:'text', value:t.title,
+    onchange: e => { const v = e.target.value.trim(); mutate(() => { if(v) t.title = v; }); },
+    onkeydown: e => { if(e.key === 'Enter') e.target.blur(); }});
+  const sel = el('select', {class:'cat', title:'Вид задачи',
+    onchange: e => mutate(() => { t.cat = e.target.value; })});
+  CATS.forEach(k => sel.append(el('option', {value:k.id, text:k.name, selected:k.id === t.cat})));
+  sel.style.background = tint(c.color);
+  const date = el('input', {type:'date', value:t.due || '', title:'Срок',
+    class: !t.done && t.due && t.due < today ? 'late' : (!t.done && t.due === today ? 'today' : ''),
+    onchange: e => mutate(() => { t.due = e.target.value; })});
+  const row = el('div', {class:'row' + (t.done ? ' done' : '')},
+    el('input', {type:'checkbox', checked:t.done, title: t.done ? 'Открыть снова' : 'Закрыть',
+      onchange: e => mutate(() => { t.done = e.target.checked; t.closedAt = t.done ? Date.now() : null; })}),
+    title, sel, date);
+  if(t.src) row.append(el('span', {class:'badge', text:'протокол', title:'Из: ' + t.src}));
+  row.append(el('button', {class:'del', text:'×', title:'Удалить', onclick: () => {
+    const idx = state.tasks.indexOf(t);
+    mutate(() => state.tasks.splice(idx,1));
+    toast('Задача удалена', 'Отменить', () => mutate(() => state.tasks.splice(idx,0,t)));
+  }}));
+  return row;
+}
+
+function render(){
+  // навигация
+  const nav = $('nav'); nav.replaceChildren();
+  const openCount = id => state.tasks.filter(t => !t.done && (id === 'all' || t.cat === id)).length;
+  const mk = (id,name,color) => el('button', {class:'nav' + (ui.cat === id ? ' on' : ''), onclick: () => { ui.cat = id; render(); }},
+    el('span', {class:'dot', style:'background:' + color}), name, el('span', {class:'n', text: openCount(id) || ''}));
+  nav.append(mk('all','Все','var(--muted)'), ...CATS.map(c => mk(c.id, c.name, c.color)));
+  // select в быстром вводе
+  const qc = $('qCat');
+  if(!qc.options.length) CATS.forEach(c => qc.append(el('option', {value:c.id, text:c.name})));
+  if(ui.cat !== 'all') qc.value = ui.cat;
+  // вкладки
+  document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === ui.tab));
+  // просрочено
+  const late = state.tasks.filter(t => !t.done && t.due && t.due < todayISO()).length;
+  const chip = $('overdueChip'); chip.hidden = !late;
+  chip.textContent = late ? `Просрочено: ${late}` : '';
+  // список
+  const list = $('list'); list.replaceChildren();
+  const groups = groupsOf(visible());
+  if(!groups.length){
+    list.append(el('div', {class:'empty', text: ui.tab === 'done' ? 'Закрытых задач нет' : 'Задач нет — добавьте первую выше'}));
+    return;
+  }
+  for(const g of groups){
+    list.append(el('section', {class:'group'}, el('h3', {class: g.bad ? 'bad' : '', text: `${g.name} · ${g.items.length}`}),
+      ...g.items.map(rowFor)));
+  }
+}
+
+/* ---------- быстрый ввод ---------- */
+$('qa').addEventListener('submit', e => {
+  e.preventDefault();
+  let text = $('qText').value.trim(); if(!text) return;
+  let due = $('qDate').value;
+  const d = parseDate(text, {relative:true});
+  if(d){
+    if(!due) due = d.iso;
+    const cleaned = text.replace(d.text, ' ').replace(/\s{2,}/g,' ').replace(/^[\s,;:—–-]+|[\s,;:—–-]+$/g,'');
+    if(cleaned.length >= 2) text = cleaned;
+  }
+  const cat = $('qCat').value;
+  mutate(() => state.tasks.push({id:uid(), title:text, cat, due, done:false, created:Date.now(), closedAt:null}));
+  $('qText').value = ''; $('qDate').value = ''; $('qText').focus();
+  if(ui.cat !== 'all' && ui.cat !== cat) ui.cat = cat, render();
+});
+document.querySelectorAll('#tabs button').forEach(b => b.onclick = () => { ui.tab = b.dataset.tab; render(); });
+$('search').addEventListener('input', e => { ui.q = e.target.value; render(); });
+$('overdueChip').onclick = () => { ui.tab = 'open'; ui.cat = 'all'; render(); };
+
+/* ---------- копия данных ---------- */
+$('btnExport').onclick = () => {
+  const blob = new Blob([JSON.stringify(state, null, 1)], {type:'application/json'});
+  const a = el('a', {href: URL.createObjectURL(blob), download: `planner-${todayISO()}.json`});
+  document.body.append(a); a.click(); a.remove();
+};
+$('btnRestore').onclick = () => $('restoreFile').click();
+$('restoreFile').onchange = async e => {
+  const f = e.target.files[0]; e.target.value = ''; if(!f) return;
+  try{
+    const s = JSON.parse(await f.text());
+    if(!Array.isArray(s.tasks)) throw 0;
+    if(!confirm(`Заменить текущие задачи (${state.tasks.length}) задачами из копии (${s.tasks.length})?`)) return;
+    state = {tasks: s.tasks, settings: Object.assign({names:''}, s.settings)};
+    save(); render(); toast('Копия загружена');
+  }catch(err){ toast('Это не файл копии планера'); }
+};
+
+/* ---------- импорт протоколов ---------- */
+const escRe = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const letters = s => (s.match(/\p{L}/gu) || []).length;
+
+function nameMatcher(){
+  const parts = state.settings.names.split(/[,;\n]+/).map(s => s.trim()).filter(s => s.length >= 3);
+  if(!parts.length) return null;
+  const alt = parts.map(p => escRe(p).replace(/\s+/g, '\\s+')).join('|');
+  const src = '(?<!\\p{L})(?:' + alt + ')\\p{L}{0,3}(?:\\s*[А-ЯЁA-Z]\\.\\s*(?:[А-ЯЁA-Z]\\.)?)?(?!\\p{L})';
+  const test = new RegExp(src, 'iu'), all = new RegExp(src, 'giu');
+  return {test: s => test.test(s), strip: s => s.replace(all, ' ')};
+}
+const LABEL = /(?:ответственн\p{L}*|исполнител\p{L}*|отв\.?|исп\.?)\s*[:\-–—]/giu;
+const stripLabels = s => s.replace(LABEL, ' ');
+
+function cleanText(s){
+  s = s.replace(/\(\s*[,;:–—-]*\s*\)|\[\s*[,;:–—-]*\s*\]/g, ' ')
+       .replace(/^\s*(?:\d+(?:\.\d+)+\.?|\d+[.)]|[-–—•*·▪●])\s*/u, '')
+       .replace(/\s+([,;:.])/g, '$1')
+       .replace(/\s{2,}/g, ' ')
+       .replace(/^[\s,;:.\-–—)]+|[\s,;:\-–—(]+$/g, '')
+       .replace(/[.;,]+$/, '').trim();
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+function splitDate(s){
+  const d = parseDate(s);
+  return d ? {s: s.replace(d.text, ' '), iso: d.iso} : {s, iso: ''};
+}
+
+const SKIP = /^(?:присутствова|присутствуют|участник|приглашен|отсутствова|список|повестк|подпис|составил|секретар|протокол\s*№)/iu;
+
+function extract(text, src){
+  const re = nameMatcher(); if(!re) return [];
+  const lines = text.replace(/\r/g, '').split('\n').map(s => s.trim());
+  const out = [], seen = new Set();
+  for(let i = 0; i < lines.length; i++){
+    const line = lines[i];
+    if(line.length < 4 || !re.test(line)) continue;
+    if(SKIP.test(line.replace(/^\s*(?:\d+[.)]|[-–—•*·▪●])\s*/u, ''))) continue;
+
+    let body = line, orig = line, due = '';
+    const only = cleanText(splitDate(re.strip(stripLabels(line))).s);
+    if(letters(only) < 4){                       // строка вида «Ответственный: Иванов» — задача выше
+      let j = i - 1; while(j >= 0 && !lines[j]) j--;
+      if(j < 0) continue;
+      body = lines[j]; orig = lines[j] + '  ⟵  ' + line;
+      for(let k = i + 1; k <= i + 2 && k < lines.length; k++){
+        if(/срок/i.test(lines[k])){ const d = parseDate(lines[k], {bare:true}); if(d){ due = d.iso; break; } }
+      }
+    }
+
+    let title = '';
+    if(/\||\t/.test(body)){                      // строка таблицы
+      const texts = [];
+      for(const c of body.split(/\s*\|\s*|\t+/).map(s => s.trim()).filter(Boolean)){
+        const d = parseDate(c, {bare:true});
+        if(d && letters(c.replace(d.text, '')) < 3){ due = due || d.iso; continue; }
+        const sd = splitDate(c); due = due || sd.iso;
+        const t = cleanText(re.strip(stripLabels(sd.s)));
+        if(letters(t) >= 3) texts.push(t);
+      }
+      title = texts.sort((a,b) => b.length - a.length)[0] || '';
+    }else{
+      const sd = splitDate(body); due = due || sd.iso;
+      title = cleanText(re.strip(stripLabels(sd.s)));
+    }
+
+    const words = title.split(/[\s,;]+/).filter(Boolean);
+    if(letters(title) < 4) continue;
+    if(words.length >= 2 && words.every(w => /^[А-ЯЁA-Z]/.test(w))) continue;   // просто список фамилий
+    const key = title.toLowerCase();
+    if(seen.has(key)) continue; seen.add(key);
+    out.push({title, due, line: orig.length > 170 ? orig.slice(0,170) + '…' : orig, src});
+  }
+  return out;
+}
+
+/* чтение файлов */
+async function readText(file){
+  const buf = await file.arrayBuffer();
+  let s = new TextDecoder('utf-8').decode(buf);
+  if(s.includes('�')) s = new TextDecoder('windows-1251').decode(buf);
+  return s;
+}
+async function inflate(u8){
+  const stream = new Blob([u8]).stream().pipeThrough(new DecompressionStream('deflate-raw'));
+  return new Response(stream).text();
+}
+async function readDocx(file){
+  const buf = await file.arrayBuffer(), u8 = new Uint8Array(buf), dv = new DataView(buf);
+  let e = u8.length - 22;
+  while(e >= 0 && dv.getUint32(e, true) !== 0x06054b50) e--;
+  if(e < 0) throw new Error('не docx');
+  const n = dv.getUint16(e + 10, true); let p = dv.getUint32(e + 16, true), xml = null;
+  const dec = new TextDecoder();
+  for(let i = 0; i < n; i++){
+    const method = dv.getUint16(p + 10, true), csize = dv.getUint32(p + 20, true);
+    const nl = dv.getUint16(p + 28, true), xl = dv.getUint16(p + 30, true), cl = dv.getUint16(p + 32, true);
+    const lho = dv.getUint32(p + 42, true);
+    if(dec.decode(u8.subarray(p + 46, p + 46 + nl)) === 'word/document.xml'){
+      const start = lho + 30 + dv.getUint16(lho + 26, true) + dv.getUint16(lho + 28, true);
+      const data = u8.subarray(start, start + csize);
+      xml = method === 0 ? dec.decode(data) : await inflate(data);
+      break;
+    }
+    p += 46 + nl + xl + cl;
+  }
+  if(!xml) throw new Error('нет document.xml');
+  const W = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
+  const doc = new DOMParser().parseFromString(xml, 'application/xml');
+  const para = pEl => {
+    let s = '';
+    for(const n of pEl.getElementsByTagNameNS(W, '*')){
+      if(n.localName === 't') s += n.textContent;
+      else if(n.localName === 'tab' || n.localName === 'br') s += ' ';
+    }
+    return s.trim();
+  };
+  const lines = [];
+  const body = doc.getElementsByTagNameNS(W, 'body')[0];
+  for(const ch of body.children){
+    if(ch.localName === 'p') lines.push(para(ch));
+    else if(ch.localName === 'tbl'){
+      for(const tr of ch.getElementsByTagNameNS(W, 'tr')){
+        const cells = [...tr.children].filter(c => c.localName === 'tc').map(tc =>
+          [...tc.children].filter(c => c.localName === 'p').map(para).filter(Boolean).join(' '));
+        lines.push(cells.join(' | '));
+      }
+    }
+  }
+  return lines.join('\n');
+}
+async function readFile(file){
+  const name = file.name.toLowerCase();
+  if(name.endsWith('.docx')) return readDocx(file);
+  if(name.endsWith('.doc') || name.endsWith('.pdf')) throw new Error('Для .doc и .pdf скопируйте текст и вставьте в поле ниже');
+  return readText(file);
+}
+
+/* окно импорта */
+let pending = [], cands = [];
+const dlg = $('imp');
+function showStep(b){ $('impA').hidden = b; $('impB').hidden = !b; }
+function renderPending(){
+  $('pending').replaceChildren(...pending.map((p, i) => el('span', {class:'chip', text: p.name + '  ×', style:'cursor:pointer',
+    title:'Убрать', onclick: () => { pending.splice(i,1); renderPending(); }})));
+}
+$('btnImport').onclick = () => {
+  $('myNames').value = state.settings.names; pending = []; renderPending(); $('pasteText').value = '';
+  showStep(false); dlg.showModal();
+  if(!state.settings.names) $('myNames').focus();
+};
+$('impCancel').onclick = () => dlg.close();
+$('impBack').onclick = () => showStep(false);
+$('myNames').addEventListener('change', e => { state.settings.names = e.target.value.trim(); save(); });
+$('drop').onclick = () => $('impFile').click();
+['dragenter','dragover'].forEach(ev => $('drop').addEventListener(ev, e => { e.preventDefault(); $('drop').classList.add('over'); }));
+['dragleave','drop'].forEach(ev => $('drop').addEventListener(ev, e => { e.preventDefault(); $('drop').classList.remove('over'); }));
+$('drop').addEventListener('drop', e => addFiles(e.dataTransfer.files));
+$('impFile').onchange = e => { addFiles(e.target.files); e.target.value = ''; };
+
+async function addFiles(files){
+  for(const f of files){
+    try{ pending.push({name: f.name, text: await readFile(f)}); }
+    catch(err){ toast(`${f.name}: ${err.message}`); }
+  }
+  renderPending();
+  if(pending.length && $('myNames').value.trim()) runImport();
+  else if(!$('myNames').value.trim()) $('myNames').focus();
+}
+
+function runImport(){
+  state.settings.names = $('myNames').value.trim(); save();
+  if(!state.settings.names){ $('myNames').focus(); toast('Укажите вашу фамилию'); return; }
+  const sources = [...pending];
+  if($('pasteText').value.trim()) sources.push({name:'вставленный текст', text:$('pasteText').value});
+  if(!sources.length){ toast('Добавьте файл или вставьте текст'); return; }
+  const norm = s => s.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, '');
+  const existing = new Set(state.tasks.map(t => norm(t.title)));
+  cands = sources.flatMap(s => extract(s.text, s.name)).map(c => ({...c, dup: existing.has(norm(c.title))}));
+  cands.forEach(c => c.on = !c.dup);
+  renderCands(); showStep(true);
+}
+$('impRun').onclick = runImport;
+
+function renderCands(){
+  const box = $('cands'); box.replaceChildren();
+  $('impTitle').textContent = cands.length ? `Найдено задач: ${cands.length}` : 'Ничего не найдено';
+  if(!cands.length){
+    box.append(el('div', {class:'empty', text:'Строк с вашей фамилией не нашлось. Проверьте написание (достаточно фамилии, склонения учитываются).'}));
+  }
+  cands.forEach(c => {
+    box.append(el('div', {class:'cand' + (c.dup ? ' dup' : '')},
+      el('input', {type:'checkbox', checked:c.on, onchange: e => { c.on = e.target.checked; updAdd(); }}),
+      el('input', {type:'text', value:c.title, onchange: e => { c.title = e.target.value.trim() || c.title; }}),
+      el('input', {type:'date', value:c.due, onchange: e => { c.due = e.target.value; }}),
+      el('div', {class:'src', title:c.line, text: (c.dup ? 'Уже есть в планере · ' : '') + c.src + ': ' + c.line})));
+  });
+  updAdd();
+}
+function updAdd(){
+  const n = cands.filter(c => c.on).length;
+  $('impAdd').textContent = `Добавить в «Работа»: ${n}`;
+  $('impAdd').disabled = !n;
+}
+$('impAdd').onclick = () => {
+  const chosen = cands.filter(c => c.on);
+  mutate(() => chosen.forEach(c => state.tasks.push({id:uid(), title:c.title, cat:'work', due:c.due || '', done:false,
+    created:Date.now(), closedAt:null, src:c.src})));
+  dlg.close(); ui.cat = 'work'; ui.tab = 'open'; render();
+  toast(`Добавлено задач: ${chosen.length}`);
+};
+
+/* ---------- старт ---------- */
+load(); render();
+</script>
+</body>
+</html>
